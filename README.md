@@ -10,6 +10,9 @@ make setup
 ```
 
 Currently the following commands are also provided:
+
 `make activate` - reinitialize your environment to the virtual env
+
 `make deactivate` - stop using the virtual environment for this project
+
 `make test` - runs unit tests
