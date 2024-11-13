@@ -24,10 +24,10 @@ A powershell script is provided to help initialize your environment, and to aid 
 
 After you can cloned the project, you can get started by running the following commands:
 
-`make setup` - initialize your environment
+`.\start.ps1 setup` - initialize your environment
 
-`make activate` - initialize the virtual environment for this project
+`.\start.ps1 activate` - initialize the virtual environment for this project
 
-`make deactivate` - stop using the virtual environment for this project
+`.\start.ps1 deactivate` - stop using the virtual environment for this project
 
-`make test` - runs unit tests
+`.\start.ps1 test` - runs unit tests
