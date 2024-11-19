@@ -42,6 +42,13 @@ class TestStringToDateTime(unittest.TestCase):
         result = string_to_datetime("920922235959")
         expected = datetime(1992, 9, 22, 23, 59, 59)
         self.assertEqual(result, expected)
+        
+    def test_whitespace_middle(self):
+        """Test date string with whitespace in the middle.
+        This is an expected case, extracted from BODB res17 file."""
+        result = string_to_datetime("800102 90304")
+        expected = datetime(1980, 1, 2, 9, 3, 4)
+        self.assertEqual(result, expected)
 
 
 if __name__ == "__main__":
