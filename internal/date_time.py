@@ -15,11 +15,13 @@ def string_to_datetime(date_string: str) -> datetime:
         datetime: the datetime representing the BODB date and time
     """
     
-    year = int("19" + date_string[0:2].strip())
-    month = int(date_string[2:4].strip())
-    day = int(date_string[4:6].strip())
-    hour = int(date_string[6:8].strip())
-    minute = int(date_string[8:10].strip())
-    second = int(date_string[10:12].strip())
+    date_string = date_string.strip()  # Remove leading and trailing spaces
+
+    year = int("19" + date_string[0:2])
+    month = int(date_string[2:4])
+    day = int(date_string[4:6])
+    hour = int(date_string[6:8])
+    minute = int(date_string[8:10])
+    second = int(date_string[10:12])
     
     return datetime(year, month, day, hour, minute, second)
