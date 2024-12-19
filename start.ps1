@@ -28,7 +28,7 @@ if ($command -eq "deactivate") {
 
 if ($command -eq "test") {
     echo "Running tests"
-    python -m unittest discover -s '.\internal'
+    python -m unittest discover -s '.\tests'
     exit
 }
 
