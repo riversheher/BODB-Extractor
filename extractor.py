@@ -4,7 +4,7 @@ import internal.ticker_conversion as ticker_conversion
 from internal.asset_price import price_to_dollars_cents, price_to_dollars_eighths
 from internal.date_time import string_to_datetime
 from internal.expiration_month import get_expiration_date
-from models.record import record
+from models.record import Record
 from datetime import datetime
 class extractor:
     """ 
@@ -33,11 +33,11 @@ class extractor:
             record = self.construct_record(line)
             
             # TODO: Insert the record into the database
-            
+            ticker_conversion
             # TODO: Logging
             
             
-    def construct_record(self, line: str) -> record:
+    def construct_record(self, line: str) -> Record:
         
         # TODO: Error Handling
         
@@ -45,7 +45,7 @@ class extractor:
         type = record_type.get_record_type(line[0:2])
             
         # Extract the ticker details
-        ticker_symbol = ticker_conversion(line[2:5])
+        ticker_symbol = ticker_conversion.get_ticker_details(line[2:5])
         
         # Extract the date and time
         date_time = string_to_datetime(line[5:17])
@@ -71,10 +71,10 @@ class extractor:
             underlying_price = price_to_dollars_eighths(line[35:40])
             
         # Create a record object
-        record = record(put_flag, date_time, expiration_date, ticker_symbol, strike_price, underlying_price)
+        result = Record(put_flag, date_time, expiration_date, ticker_symbol, strike_price, underlying_price)
         
         
         # TODO: Based on the record type, construct the child record type (quote or trade)
         
         
-        return record
+        return result
