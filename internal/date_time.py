@@ -5,7 +5,7 @@ def string_to_datetime(date_string: str) -> datetime:
     to a datetime object.  You can read more about the datetime
     object here: https://docs.python.org/3/library/datetime.html
     
-    The BODB substring for time and date should be encoded at [6-17]
+    The BODB substring for time and date should be encoded at [6-17] in the BODB record, which is [5:17] in Pytho since the index is 0-based, and the last index is exclusive.
     in the format: YYMMDDHHMMSS
 
     Args:
