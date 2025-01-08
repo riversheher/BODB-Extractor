@@ -42,7 +42,11 @@ class extractor:
         # TODO: Error Handling
         
         # Extract the record type
-        type = record_type.get_record_type(line[0:2])
+  try:
+      type = record_type.get_record_type(line[0:2])
+  except ValueError as e:
+      logger.error(f"Failed to extract record type: {e}")
+      return None
             
         # Extract the ticker details
         ticker_symbol = ticker_conversion.get_ticker_details(line[2:5])
