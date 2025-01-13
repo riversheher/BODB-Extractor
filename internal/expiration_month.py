@@ -26,6 +26,8 @@ def get_expiration_date(month_string: str, option_date: datetime) -> datetime:
     
     # Find difference between weekday and friday
     difference = 5 - weekday
+    if difference < 0:
+        difference += 7
     
     # Add difference to day
     day += difference
