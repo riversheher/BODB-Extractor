@@ -16,4 +16,23 @@ def get_expiration_date(month_string: str, option_date: datetime) -> datetime:
     Returns:
         datetime: _description_
     """
-    return datetime.datetime.now()
+    
+    year = option_date.year
+    month = int(month_string)
+    day = 1
+    
+    # Find the weekday for the first day of the expiration month.
+    weekday = datetime.datetime(year, month, day).isoweekday()
+    
+    # Find difference between weekday and friday
+    difference = 5 - weekday
+    
+    # Add difference to day
+    day += difference
+    
+    # Add 14 to day to get the third friday, then add one more to get the saturday
+    # in total add 15
+    day += 15
+
+    
+    return datetime.datetime(year, month, day)
