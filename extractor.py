@@ -1,3 +1,4 @@
+from venv import logger
 import internal.file_reader as reader
 import internal.record_type as record_type
 import internal.ticker_conversion as ticker_conversion
@@ -33,7 +34,7 @@ class extractor:
             record = self.construct_record(line)
             
             # TODO: Insert the record into the database
-            ticker_conversion
+            
             # TODO: Logging
             
             
@@ -42,11 +43,11 @@ class extractor:
         # TODO: Error Handling
         
         # Extract the record type
-  try:
-      type = record_type.get_record_type(line[0:2])
-  except ValueError as e:
-      logger.error(f"Failed to extract record type: {e}")
-      return None
+        try:
+            type = record_type.get_record_type(line[0:2])
+        except ValueError as e:
+            logger.error(f"Failed to extract record type: {e}")
+            return None
             
         # Extract the ticker details
         ticker_symbol = ticker_conversion.get_ticker_details(line[2:5])
