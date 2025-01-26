@@ -6,7 +6,7 @@ setup:
 	pip3 install -r requirements.txt
 
 activate:
-	source .venv/bin/activate
+	source venv/bin/activate
 	
 deactivate:
 	deactivate
