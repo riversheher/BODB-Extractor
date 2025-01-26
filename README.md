@@ -31,3 +31,18 @@ After you can cloned the project, you can get started by running the following c
 `.\start.ps1 deactivate` - stop using the virtual environment for this project
 
 `.\start.ps1 test` - runs unit tests
+
+## .env File
+This project requires you to create a .env file to configure the database connection.  To do this, you will want to create a new file named `.env` in the root directory:
+
+- On Windows: `ni .env`
+- On Linux: `touch .env`
+
+Then, you will require a file with the following structure:
+- `[postgresql]` : The section heading for the database configurations
+- `host = <hostname>`
+- `database = <database name>`
+- `user = <username>`
+- `password = <password>`
+
+This assumes you are utilizing password authentication or `md5` for connections.

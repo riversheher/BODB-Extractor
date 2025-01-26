@@ -7,6 +7,7 @@ from internal.date_time import string_to_datetime
 from internal.expiration_month import get_expiration_date
 from models.record import Record
 from datetime import datetime
+import psycopg2
 class extractor:
     """ 
     Extractor is a class that handles the extraction of BODB data from a file,
@@ -22,8 +23,46 @@ class extractor:
     as a dictionary.  This dictionary should contain the following
     TODO: Add the database configuration dictionary keys here.
     """
-    def extract(self, filepath):
+    
+    def __init__(self, db_config: dict):
+        self.db_config = db_config
+        self.conn = None
         
+    def connect(self):
+        """
+        connects to the database
+        """
+        try:
+            # connecting to the PGSQL Server
+            with psycopg2.connect(
+                host = self.db_config['host'],
+                database = self.db_config['database'],
+                user = self.db_config['user'],
+                password = self.db_config['password'],
+                ) as conn:
+                print("Connected to the database")
+                self.conn = conn
+                return True
+        except (psycopg2.DatabaseError, Exception) as error:
+            print(f"Error connecting to the database: {error}")
+            return False
+        
+    def disconnect(self):
+        """
+        Disconnects from the database
+        """
+        if self.conn is not None:
+            self.conn.close()
+            self.conn = None
+            print("Disconnected from the database")
+        
+    def is_connected(self):
+        """
+        Returns True if the connection to the database is open, False otherwise
+        """
+        return self.conn is not None
+    
+    def extract(self, filepath):
         # Call the file reader to read the file line by line
         file_reader = reader.read_file(filepath)
         for line in file_reader:
