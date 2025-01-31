@@ -8,6 +8,8 @@ from internal.expiration_month import get_expiration_date
 from models.record import Record
 from datetime import datetime
 import psycopg2
+
+from models.record import OptionType
 class extractor:
     """ 
     Extractor is a class that handles the extraction of BODB data from a file,
@@ -98,9 +100,11 @@ class extractor:
         expiration_date = get_expiration_date(line[17:19], date_time)
         
         # Extract the call/put flag
-        put_flag = False
+        option_type = OptionType.Call
         if line[19] == '-':
-            put_flag = True
+            option_type = OptionType.Put
+            
+        
         
         
         # Extract the strike price
@@ -115,7 +119,7 @@ class extractor:
             underlying_price = price_to_dollars_eighths(line[35:40])
             
         # Create a record object
-        result = Record(put_flag, date_time, expiration_date, ticker_symbol, strike_price, underlying_price)
+        result = Record(date_time, expiration_date, ticker_symbol, option_type, strike_price, underlying_price)
         
         
         # TODO: Based on the record type, construct the child record type (quote or trade)

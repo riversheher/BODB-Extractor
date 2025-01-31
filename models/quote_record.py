@@ -1,10 +1,11 @@
 
 from datetime import datetime
 from models import Record
+from models.record import OptionType
 
 
 class Quote(Record):
-    def __init__(self, timestamp: datetime, expiration_date: datetime, ticker: str, strike_price: float, underlying_price: float, bid: float, ask: float):
+    def __init__(self, timestamp: datetime, expiration_date: datetime, ticker: str, option_type: OptionType, strike_price: float, underlying_price: float, bid: float, ask: float, id: int = None, fingerprint: str = None):
         """Initializes a new Quote object from the given parameters.
 
         Args:
@@ -16,11 +17,11 @@ class Quote(Record):
             bid (float): the bid price of the option
             ask (float): the ask price of the option
         """
-        Record.__init__(self, timestamp, expiration_date, ticker, strike_price, underlying_price)
+        Record.__init__(self, timestamp, expiration_date, ticker, option_type, strike_price, underlying_price, id, fingerprint)
         self.bid = bid
         self.ask = ask
         
-    def __init__(self, record: Record, bid: float, ask: float):
+    def __init__(self, record: Record, bid: float, ask: float, id: int = None, fingerprint: str = None):
         """Initializes a new Quote object from the given Record object and bid and ask prices.
         This creates a new record object and does not utilize the input record object to avoid side effects.
 
@@ -29,6 +30,7 @@ class Quote(Record):
             bid (float): the bid price of the option
             ask (float): the ask price of the option
         """
-        Record.__init__(self, record.timestamp, record.expiration_date, record.ticker, record.strike_price, record.underlying_price)
+        Record.__init__(self, record.timestamp, record.expiration_date, record.ticker, record.option_type, record.strike_price, record.underlying_price, id, fingerprint)
         self.bid = bid
         self.ask = ask
+        
