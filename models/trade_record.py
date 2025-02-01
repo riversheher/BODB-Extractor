@@ -1,8 +1,6 @@
 
 from datetime import datetime
-from models import Record
-from enum import Enum
-
+from models.record import Record
 from models.record import OptionType
 
 class Trade(Record):

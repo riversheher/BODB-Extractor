@@ -9,7 +9,7 @@ class OptionType(Enum):
 class Record():
     
     option_type_query = """
-    CREATE TYPE optiontype AS ENUM('Call', 'Put');
+    CREATE TYPE optiontype AS ENUM('call', 'put');
     """
     
     

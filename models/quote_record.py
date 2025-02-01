@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from models import Record
+from models.record import Record
 from models.record import OptionType
 
 

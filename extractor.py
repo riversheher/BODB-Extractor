@@ -63,6 +63,12 @@ class extractor:
         Returns True if the connection to the database is open, False otherwise
         """
         return self.conn is not None
+
+    def get_connection(self):
+        """
+        Returns the connection object to the database
+        """
+        return self.conn
     
     def extract(self, filepath):
         # Call the file reader to read the file line by line
