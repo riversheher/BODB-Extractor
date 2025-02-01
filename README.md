@@ -4,20 +4,7 @@ The BODB-Extractor is an effor to create a set of tools which will extract the d
 # Start Here
 
 ## Linux
-A makefile is provided to help initialize your environment with the required dependencies for this project.
-
-After you have cloned the project, you can get started by running the following commands:
-```
-make setup
-```
-
-Currently the following commands are also provided:
-
-`make activate` - reinitialize your environment to the virtual env
-
-`make deactivate` - stop using the virtual environment for this project
-
-`make test` - runs unit tests
+A shell script is in progress to aid in setup
 
 ## Windows
 A powershell script is provided to help initialize your environment, and to aid in automating testing procedures.
