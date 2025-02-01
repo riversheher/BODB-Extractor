@@ -7,6 +7,12 @@ class OptionType(Enum):
     Put = 2
 
 class Record():
+    
+    option_type_query = """
+    CREATE TYPE optiontype AS ENUM('Call', 'Put');
+    """
+    
+    
     def __init__(self, timestamp: datetime, expiration_date: datetime, ticker: str, option_type: OptionType, strike_price: float, underlying_price: float, id: int = None, fingerprint: str = None):
         """Initializes a new Record object from the given parameters.
 
