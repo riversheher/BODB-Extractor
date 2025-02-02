@@ -4,11 +4,11 @@ import psycopg2
 from datetime import datetime
 
 import internal.load
-from models.trade_record import Trade
+from models.quote_record import Quote
 from models.record import Record
 from models.record import OptionType
 
-class TestTradeRecord(unittest.TestCase):
+class TestQuoteRecord(unittest.TestCase):
     """
     This is a test class with a set of integration tests from a top down approach.
     
@@ -41,7 +41,7 @@ class TestTradeRecord(unittest.TestCase):
             
         # delete lines with the fingerprint 'test'
         with self.conn.cursor() as cursor:
-            cursor.execute("DELETE FROM trades WHERE fingerprint = 'test'")
+            cursor.execute("DELETE FROM quotes WHERE fingerprint = 'test'")
             self.conn.commit()
             
     def tearDown(self):
@@ -50,12 +50,12 @@ class TestTradeRecord(unittest.TestCase):
         self.conn.close()
         print("Disconnected from the database")
         
-    def test_insert_trade(self):
+    def test_insert_quote(self):
         """
         Test the insertion of a trade record into the database
         """
         with self.conn.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) FROM trades WHERE fingerprint = 'test'")
+            cursor.execute("SELECT COUNT(*) FROM quotes WHERE fingerprint = 'test'")
             count = cursor.fetchone()[0]
             self.assertEqual(count, 0)
             
@@ -63,11 +63,11 @@ class TestTradeRecord(unittest.TestCase):
         
         record = Record(now, now, 'AA', OptionType.call, 100, 100)
         
-        trade = Trade(record, 100, 100, fingerprint='test')
+        trade = Quote(record, 100, 100, fingerprint='test')
         trade.fingerprint = 'test'
         trade.insert(self.conn)
         
         with self.conn.cursor() as cursor:
-            cursor.execute("SELECT COUNT(*) FROM trades WHERE fingerprint = 'test'")
+            cursor.execute("SELECT COUNT(*) FROM quotes WHERE fingerprint = 'test'")
             count = cursor.fetchone()[0]
             self.assertEqual(count, 1)
