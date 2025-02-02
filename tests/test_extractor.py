@@ -53,7 +53,7 @@ class TestConstructRecord(unittest.TestCase):
         
         line = " 2AA 800102 90304 1  4500 1000 1050 5500"
         record = e.construct_record(line)
-        self.assertEqual(record.option_type, OptionType.Call)
+        self.assertEqual(record.option_type, OptionType.call)
         
     def test_nominal_strike_price(self):
         """Test a normal, correctly formatted line for the strike price field."""

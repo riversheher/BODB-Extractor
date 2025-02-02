@@ -8,6 +8,7 @@ from internal.expiration_month import get_expiration_date
 from models.record import Record
 from datetime import datetime
 import psycopg2
+import os
 
 from models.record import OptionType
 class extractor:
@@ -73,12 +74,18 @@ class extractor:
     def extract(self, filepath):
         # Call the file reader to read the file line by line
         file_reader = reader.read_file(filepath)
+        # Keep track of line number and file name
+        line_number = 0
+        file_name = os.path.basename(filepath)
         for line in file_reader:
+            line_number += 1
             # check if line has 40 characters
             if len(line) != 40:
                 pass
             
             record = self.construct_record(line)
+            if record is not None:
+                record.fingerprint = f"{file_name}:{line_number}"
             
             # TODO: Insert the record into the database
             
@@ -86,6 +93,18 @@ class extractor:
             
             
     def construct_record(self, line: str) -> Record:
+        """construct_record constructs a record object from a line of BODB data
+        If the line is not a valid BODB record, None is returned
+        If the line is a valid BODB record, a Record object is returned,
+        it could be of type Quote or Trade
+
+        Args:
+            line (str): The line extracted from the BODB file
+
+        Returns:
+            Record: A Record object representing the BODB data,
+            or None if the line is not a valid BODB record.  This is of child type Quote or Trade
+        """
         
         # TODO: Error Handling
         
@@ -106,12 +125,9 @@ class extractor:
         expiration_date = get_expiration_date(line[17:19], date_time)
         
         # Extract the call/put flag
-        option_type = OptionType.Call
+        option_type = OptionType.call
         if line[19] == '-':
-            option_type = OptionType.Put
-            
-        
-        
+            option_type = OptionType.put
         
         # Extract the strike price
         strike_price = price_to_dollars_cents(line[20:25])

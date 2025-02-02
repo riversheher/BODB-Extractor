@@ -3,8 +3,8 @@ from datetime import datetime
 from enum import Enum
 
 class OptionType(Enum):
-    Call = 1
-    Put = 2
+    call = 1
+    put = 2
 
 class Record():
     
