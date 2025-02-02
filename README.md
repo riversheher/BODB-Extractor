@@ -4,7 +4,7 @@ The BODB-Extractor is an effor to create a set of tools which will extract the d
 # Start Here
 
 ## Linux
-A shell script is in progress to aid in setup
+A shell script is in progress to aid in setup WIP
 
 ## Windows
 A powershell script is provided to help initialize your environment, and to aid in automating testing procedures.
