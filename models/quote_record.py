@@ -1,9 +1,9 @@
 
 from datetime import datetime
-from models import Record
+from models import record
 
 
-class Quote(Record):
+class Quote(record):
     def __init__(self, timestamp: datetime, expiration_date: datetime, ticker: str, strike_price: float, underlying_price: float, bid: float, ask: float):
         """Initializes a new Quote object from the given parameters.
 
