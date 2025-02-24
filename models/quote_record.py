@@ -16,11 +16,11 @@ class Quote(record):
             bid (float): the bid price of the option
             ask (float): the ask price of the option
         """
-        Record.__init__(self, timestamp, expiration_date, ticker, strike_price, underlying_price)
+        record.__init__(self, timestamp, expiration_date, ticker, strike_price, underlying_price)
         self.bid = bid
         self.ask = ask
         
-    def __init__(self, record: Record, bid: float, ask: float):
+    def __init__(self, record: record, bid: float, ask: float):
         """Initializes a new Quote object from the given Record object and bid and ask prices.
         This creates a new record object and does not utilize the input record object to avoid side effects.
 
@@ -29,6 +29,6 @@ class Quote(record):
             bid (float): the bid price of the option
             ask (float): the ask price of the option
         """
-        Record.__init__(self, record.timestamp, record.expiration_date, record.ticker, record.strike_price, record.underlying_price)
+        record.__init__(self, record.timestamp, record.expiration_date, record.ticker, record.strike_price, record.underlying_price)
         self.bid = bid
         self.ask = ask
