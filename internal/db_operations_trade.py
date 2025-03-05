@@ -19,14 +19,15 @@ dynamodb = resource(
     aws_secret_access_key=aws_secret_key
 )
 
-trade_table = dynamodb.Table('Options_Data')
+trade_table = dynamodb.Table('trade_record')
 
 # Insert a Trade record
 def insert_trade(trade):
     response = trade_table.put_item(
         Item={
-            'Ticker_Symbol': trade.ticker,  # Partition key
-            'Symbol': trade.strike_price,   # Sort key
+            'Fingerprint': trade.fingerprint, # Partition key
+            'Ticker_Symbol': trade.ticker,
+            'Strike': trade.strike_price,
             'timestamp': trade.timestamp.isoformat(),
             'expiration_date': trade.expiration_date.isoformat(),
             'underlying_price': trade.underlying_price,
@@ -38,27 +39,26 @@ def insert_trade(trade):
     print(f'Insert response: {response}')
 
 # Query by Ticker_Symbol
-def query_by_ticker(ticker):
+def query_by_ticker(fingerprint):
     response = trade_table.query(
-        KeyConditionExpression=Key('Ticker_Symbol').eq(ticker)
+        KeyConditionExpression=Key('Fingerprint').eq(fingerprint)
     )
     for item in response['Items']:
         print(f'Item: {item}')
 
 # Query by Ticker_Symbol and Symbol
-def query_by_ticker_and_symbol(ticker, symbol):
+def query_by_ticker_and_symbol(fingerprint):
     response = trade_table.query(
-        KeyConditionExpression=Key('Ticker_Symbol').eq(ticker) & Key('Symbol').eq(symbol)
+        KeyConditionExpression=Key('Fingerprint').eq(fingerprint)
     )
     for item in response['Items']:
         print(f'Item: {item}')
 
 # Update a Trade record
-def update_trade(ticker, symbol, new_volume, new_price):
+def update_trade(fingerprint, ticker, symbol, new_volume, new_price):
     response = trade_table.update_item(
         Key={
-            'Ticker_Symbol': ticker,
-            'Symbol': symbol
+            'Fingerprint': fingerprint,
         },
         UpdateExpression='SET volume=:v, price=:p, updated_date=:d',
         ExpressionAttributeValues={
@@ -75,7 +75,6 @@ def batch_delete_trades(items_to_delete):
     with trade_table.batch_writer() as batch:
         for item in items_to_delete:
             batch.delete_item(Key={
-                'Ticker_Symbol': item['Ticker_Symbol'],
-                'Symbol': item['Symbol']
+                'Fingerprint': item['fingerprint'],
             })
     print('Batch delete completed.')
