@@ -1,9 +1,9 @@
 
 from datetime import datetime
-from models import record
+from models.record import Record
 
 
-class Quote(record):
+class Quote(Record):
     def __init__(self, timestamp: datetime, expiration_date: datetime, ticker: str, strike_price: float, underlying_price: float, bid: float, ask: float):
         """Initializes a new Quote object from the given parameters.
 
@@ -16,11 +16,11 @@ class Quote(record):
             bid (float): the bid price of the option
             ask (float): the ask price of the option
         """
-        record.__init__(self, timestamp, expiration_date, ticker, strike_price, underlying_price)
+        Record.__init__(self, timestamp, expiration_date, ticker, strike_price, underlying_price)
         self.bid = bid
         self.ask = ask
         
-    def __init__(self, record: record, bid: float, ask: float):
+    def __init__(self, record: Record, bid: float, ask: float):
         """Initializes a new Quote object from the given Record object and bid and ask prices.
         This creates a new record object and does not utilize the input record object to avoid side effects.
 
