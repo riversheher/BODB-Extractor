@@ -1,9 +1,9 @@
 import boto3
 from boto3.dynamodb.conditions import Key
 import logging
-from decimal import Decimal  # ✅ Needed to handle float values in DynamoDB
+from decimal import Decimal  
 
-# ✅ Configure Logging
+# Configure Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
