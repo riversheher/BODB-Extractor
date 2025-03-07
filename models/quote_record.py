@@ -27,6 +27,11 @@ class Quote(Record):
     (timestamp, expiration_date, ticker, strike_price, underlying_price, option_type, bid, ask, fingerprint)
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
+    
+    select_query = """
+    SELECT * FROM quotes;
+    """
+    
         
     def __init__(self, record: Record, bid: float, ask: float, id: int = None, fingerprint: str = None):
         """Initializes a new Quote object from the given Record object and bid and ask prices.
@@ -42,6 +47,9 @@ class Quote(Record):
         Record.__init__(self, record.timestamp, record.expiration_date, record.ticker, record.option_type, record.strike_price, record.underlying_price, id, fingerprint)
         self.bid = bid
         self.ask = ask
+        
+    def __str__(self):
+        return f'Quote: ID: {self.id}, FINGERPRINT: {self.fingerprint},  {self.timestamp}, {self.expiration_date}, {self.ticker}, {self.strike_price}, {self.underlying_price}, {self.ask}, {self.bid}'
         
     def to_tuple(self) -> tuple:
         """Converts the Quote object to a tuple for the purpose of inserting into the database.
@@ -68,4 +76,3 @@ class Quote(Record):
         except psycopg2.DatabaseError as error:
             conn.rollback()
             return error
-        

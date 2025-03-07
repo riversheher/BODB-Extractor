@@ -35,3 +35,6 @@ class Record():
         self.underlying_price = underlying_price
         self.fingerprint = fingerprint
         
+    def insert(self, conn) -> Exception:
+        pass
+        

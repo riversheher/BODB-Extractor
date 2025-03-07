@@ -40,6 +40,9 @@ class Trade(Record):
         self.volume = volume
         self.price = price
         
+    def __str__(self):
+        return f'Trade: ID: {self.id}, FINGERPRINT: {self.fingerprint},  {self.timestamp}, {self.expiration_date}, {self.ticker}, {self.strike_price}, {self.underlying_price}, {self.price}, {self.volume}'
+        
     def to_tuple(self) -> tuple:
         """Returns the trade object as a tuple for the purpose of inserting into the database.
 

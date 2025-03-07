@@ -1,11 +1,15 @@
 from venv import logger
+import logging
 import internal.file_reader as reader
 import internal.record_type as record_type
 import internal.ticker_conversion as ticker_conversion
+import internal.trade_detail as trade
 from internal.asset_price import price_to_dollars_cents, price_to_dollars_eighths
 from internal.date_time import string_to_datetime
 from internal.expiration_month import get_expiration_date
 from models.record import Record
+from models.trade_record import Trade
+from models.quote_record import Quote
 from datetime import datetime
 import psycopg2
 import os
@@ -30,6 +34,8 @@ class extractor:
     def __init__(self, db_config: dict):
         self.db_config = db_config
         self.conn = None
+        logging.basicConfig(filename=f'{datetime.now().year}.log',format='%(asctime)s %(message)s', filemode='w', level=logging.INFO)
+        self.log = logging.getLogger()
         
     def connect(self):
         """
@@ -47,7 +53,7 @@ class extractor:
                 self.conn = conn
                 return True
         except (psycopg2.DatabaseError, Exception) as error:
-            print(f"Error connecting to the database: {error}")
+            self.log.critical("error connecting to the database!")
             return False
         
     def disconnect(self):
@@ -57,7 +63,7 @@ class extractor:
         if self.conn is not None:
             self.conn.close()
             self.conn = None
-            print("Disconnected from the database")
+            self.log.info("disconnected from database")
         
     def is_connected(self):
         """
@@ -76,20 +82,36 @@ class extractor:
         file_reader = reader.read_file(filepath)
         # Keep track of line number and file name
         line_number = 0
+        errors = 0
+        successes = 0
         file_name = os.path.basename(filepath)
+        
+        self.log.info(f'STARTING EXTRACTION FOR {file_name}')
+        
         for line in file_reader:
             line_number += 1
             # check if line has 40 characters
             if len(line) != 40:
                 pass
+            try:
+                record = self.construct_record(line)
+            except Exception as e:
+                self.log.warning(f'Error extracting record: {str(record)}: \n{repr(e)}\n skipping...')
+                continue
             
-            record = self.construct_record(line)
             if record is not None:
                 record.fingerprint = f"{file_name}:{line_number}"
+                try:
+                    record.insert(self.conn)
+                    successes += 1
+                except Exception as e:
+                    errors += 1
+                    self.log.warning(f'Error extracting record: {str(record)}: \n{repr(e)}\n skipping...')
+                    continue
+        
+        self.log.info(f'Finished extracting {file_name}, with successes: {successes}, and errors: {errors}')
             
-            # TODO: Insert the record into the database
             
-            # TODO: Logging
             
             
     def construct_record(self, line: str) -> Record:
@@ -109,6 +131,7 @@ class extractor:
         # TODO: Error Handling
         
         # Extract the record type
+        type = None
         try:
             type = record_type.get_record_type(line[0:2])
         except ValueError as e:
@@ -144,7 +167,24 @@ class extractor:
         result = Record(date_time, expiration_date, ticker_symbol, option_type, strike_price, underlying_price)
         
         
-        # TODO: Based on the record type, construct the child record type (quote or trade)
-        
+        # Based on the record type, construct the child record type (quote or trade)
+        if type == None:
+            raise Exception("No type was extracted")
+        try:
+            if type == "Trade":
+                price = price_to_dollars_cents(line[25:30])
+                volume = trade.get_volume(line[30:35])
+                trade_record = Trade(result, volume, price)
+                return trade_record
+            elif type == "Quote":
+                bid = price_to_dollars_cents(line[25:30])
+                ask = price_to_dollars_cents(line[30:35])
+                quote_record = Quote(result, bid, ask)
+                return quote_record
+            else:
+                raise Exception(f'Extraction for record type: {type} not implemented')
+        except Exception as e:
+            raise Exception(f'Error in construction Quote or Trade: {repr(e)}')
+            
         
         return result

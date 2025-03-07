@@ -11,5 +11,4 @@ def get_ticker_details(ticker: str):
     Returns:
         TODO: Add the return type here that represents the ticker and what company it represents
     """
-    
-    pass
+    return ticker.strip()
