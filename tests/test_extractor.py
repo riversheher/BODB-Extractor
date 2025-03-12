@@ -73,5 +73,10 @@ class TestConstructRecord(unittest.TestCase):
         record = e.construct_record(line)
         self.assertEqual(record.underlying_price, 80.13)
         
+    def test_issue(self):
+        e = extractor(self.config_dict)
+        record = e.construct_record(" 1OXY800130150522 5  3000  300    1 2925")
+        print(f'TESTING RECORD: {str(record)}')
+        
 if __name__ == "__main__":
     unittest.main()

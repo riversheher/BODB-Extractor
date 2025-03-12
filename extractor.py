@@ -1,4 +1,5 @@
 from venv import logger
+import traceback
 import logging
 import internal.file_reader as reader
 import internal.record_type as record_type
@@ -106,7 +107,9 @@ class extractor:
                     successes += 1
                 except Exception as e:
                     errors += 1
-                    self.log.warning(f'Error extracting record: {str(record)}: \n{repr(e)}\n skipping...')
+                    self.log.warning(f'Error extracting record: {str(record)}: \n{repr(e)}\n')
+                    traceback.print_exception(type(e), e, e.__traceback__)
+                    self.log.warning(f'skipping...')
                     continue
         
         self.log.info(f'Finished extracting {file_name}, with successes: {successes}, and errors: {errors}')
@@ -149,11 +152,11 @@ class extractor:
         
         # Extract the call/put flag
         option_type = OptionType.call
-        if line[19] == '-':
+        if line[20] == '-':
             option_type = OptionType.put
         
         # Extract the strike price
-        strike_price = price_to_dollars_cents(line[20:25])
+        strike_price = price_to_dollars_cents(line[21:25])
         
         # Extract the underlying price
         # Create a datetime object for January 1986
@@ -184,7 +187,5 @@ class extractor:
             else:
                 raise Exception(f'Extraction for record type: {type} not implemented')
         except Exception as e:
-            raise Exception(f'Error in construction Quote or Trade: {repr(e)}')
-            
-        
-        return result
+            self.log.error(f'Effor in construction Quote or Trade: {repr(e)}')
+            raise e
