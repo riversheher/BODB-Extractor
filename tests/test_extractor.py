@@ -2,6 +2,8 @@ import unittest
 from extractor import extractor
 from datetime import datetime
 
+from models.record import OptionType
+
 class TestConstructRecord(unittest.TestCase):
     """
     This is a test class with a set of integration tests from a top down approach.
@@ -10,11 +12,17 @@ class TestConstructRecord(unittest.TestCase):
     included in separate test classes.
 
     """
+    config_dict = {
+            'host': 'localhost',
+            'database': 'bodb',
+            'user': 'bodb',
+            'password': 'bodb'
+        }
         
     def test_nominal_ticker(self):
         """Test a normal, correctly formatted line for the ticker field."""
         
-        e = extractor()
+        e = extractor(self.config_dict)
         
         line = " 2AA 800102 90304 1  4500 1000 1050 5500"
         record = e.construct_record(line)
@@ -23,7 +31,7 @@ class TestConstructRecord(unittest.TestCase):
     def test_nominal_date_time(self):
         """Test a normal, correctly formatted line for the date and time field."""
         
-        e = extractor()
+        e = extractor(self.config_dict)
         
         line = " 2AA 800102 90304 1  4500 1000 1050 5500"
         record = e.construct_record(line)
@@ -32,25 +40,25 @@ class TestConstructRecord(unittest.TestCase):
     def test_nominal_expiration_date(self):
         """Test a normal, correctly formatted line for the expiration date field."""
         
-        e = extractor()
+        e = extractor(self.config_dict)
         
         line = " 2AA 800102 90304 1  4500 1000 1050 5500"
         record = e.construct_record(line)
         self.assertEqual(record.expiration_date, datetime(1980, 1, 19, 0, 0, 0))
         
-    def test_nominal_put_flag(self):
+    def test_nominal_option_type(self):
         """Test a normal, correctly formatted line for the put flag field."""
         
-        e = extractor()
+        e = extractor(self.config_dict)
         
         line = " 2AA 800102 90304 1  4500 1000 1050 5500"
         record = e.construct_record(line)
-        self.assertFalse(record.put)
+        self.assertEqual(record.option_type, OptionType.call)
         
     def test_nominal_strike_price(self):
         """Test a normal, correctly formatted line for the strike price field."""
         
-        e = extractor()
+        e = extractor(self.config_dict)
         
         line = " 2AA 800102 90304 1  4500 1000 1050 5500"
         record = e.construct_record(line)
@@ -59,7 +67,7 @@ class TestConstructRecord(unittest.TestCase):
     def test_nomimal_underlying_price(self):
         """Test a normal, correctly formatted line for the underlying price field."""
         
-        e = extractor()
+        e = extractor(self.config_dict)
         
         line = " 1NCR800213123936 3  7000 1013   10 8013"
         record = e.construct_record(line)
