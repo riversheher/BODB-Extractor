@@ -34,6 +34,7 @@ class extractor:
             record = self.construct_record(line)
             
             # TODO: Insert the record into the database
+
             
             # TODO: Logging
             
