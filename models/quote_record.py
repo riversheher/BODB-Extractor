@@ -68,4 +68,3 @@ class Quote(Record):
         except psycopg2.DatabaseError as error:
             conn.rollback()
             return error
-        
