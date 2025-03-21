@@ -7,7 +7,7 @@ import psycopg2
 
 
 class Quote(Record):
-    create_table_query = """
+    """
     CREATE TABLE IF NOT EXISTS quotes (
         id BIGSERIAL PRIMARY KEY,
         timestamp TIMESTAMP NOT NULL,
@@ -19,18 +19,17 @@ class Quote(Record):
         bid REAL NOT NULL,
         ask REAL NOT NULL,
         fingerprint TEXT UNIQUE
-    )
+    )""""""
     """
     
-    insert_query = """
-    INSERT INTO quotes
-    (timestamp, expiration_date, ticker, strike_price, underlying_price, option_type, bid, ask, fingerprint)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+    #insert_query = """
+    #INSERT INTO quotes
+    #(timestamp, expiration_date, ticker, strike_price, underlying_price, option_type, bid, ask, fingerprint)
+    #VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
     """
     
-    select_query = """
-    SELECT * FROM quotes;
-    """
+    #select_query = """
+    #SELECT * FROM quotes;
     
         
     def __init__(self, record: Record, bid: float, ask: float, id: int = None, fingerprint: str = None):
