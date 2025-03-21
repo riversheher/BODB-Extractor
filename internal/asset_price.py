@@ -30,8 +30,8 @@ def price_to_dollars_eighths(asset_string: str) -> float:
     
     # If the string is lesss than 2 characters long after stripping white space
     # then the price is less than 1 dollar.
-    if len(asset_string) < 2:
-        return (int(asset_string)/8)/100
+    if len(asset_string) <= 2:
+        return (int(asset_string)/8)/10
     
     cents = (int(asset_string[-2:])/8)/10
     dollars = int(asset_string[:-2])
