@@ -28,12 +28,12 @@ def insert_quote(quote):
         Item={
             'Fingerprint': quote.fingerprint, # Partition key
             'Ticker_Symbol': quote.ticker,
-            'Strike': Decimal(quote.strike_price),
+            'Strike': Decimal(str(quote.strike_price)),
             'timestamp': quote.timestamp.isoformat(),
             'expiration_date': quote.expiration_date.isoformat(),
             'underlying_price': Decimal(quote.underlying_price),
-            'bid': Decimal(quote.bid),
-            'ask': Decimal(quote.ask)
+            'bid': Decimal(str(quote.bid)),
+            'ask': Decimal(str(quote.ask))
         }
     )
     print(f'Insert response: {response}')
