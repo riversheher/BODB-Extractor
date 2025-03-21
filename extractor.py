@@ -104,6 +104,7 @@ class extractor:
                 record.fingerprint = f"{file_name}:{line_number}"
                 try:
                     record.insert(self.conn)
+
                     successes += 1
                 except Exception as e:
                     errors += 1
