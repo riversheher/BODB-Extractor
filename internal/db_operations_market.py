@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from boto3 import resource
 from boto3.dynamodb.conditions import Key, Attr
 from datetime import datetime
@@ -27,12 +29,12 @@ def insert_quote(quote):
         Item={
             'Fingerprint': quote.fingerprint, # Partition key
             'Ticker_Symbol': quote.ticker,
-            'Strike': quote.strike_price,
+            'Strike': Decimal(str(quote.strike_price)),
             'timestamp': quote.timestamp.isoformat(),
             'expiration_date': quote.expiration_date.isoformat(),
-            'underlying_price': quote.underlying_price,
-            'bid': quote.bid,
-            'ask': quote.ask
+            'underlying_price': Decimal(str(quote.underlying_price)),
+            'bid': Decimal(str(quote.bid)),
+            'ask': Decimal(str(quote.ask))
         }
     )
     print(f'Insert response: {response}')

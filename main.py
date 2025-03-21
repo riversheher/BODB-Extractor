@@ -32,7 +32,6 @@ def test():
     # Disconnect from the database
     # system.disconnect()  # POSTGRES
 
-
 test()
 
     

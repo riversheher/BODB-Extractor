@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from boto3 import resource
 from boto3.dynamodb.conditions import Key, Attr
 from datetime import datetime
@@ -27,13 +29,13 @@ def insert_trade(trade):
         Item={
             'Fingerprint': trade.fingerprint, # Partition key
             'Ticker_Symbol': trade.ticker,
-            'Strike': trade.strike_price,
+            'Strike': Decimal(str(trade.strike_price)),
             'timestamp': trade.timestamp.isoformat(),
             'expiration_date': trade.expiration_date.isoformat(),
-            'underlying_price': trade.underlying_price,
+            'underlying_price': Decimal(str(trade.underlying_price)),
             'option_type': trade.option_type.name,
             'volume': trade.volume,
-            'price': trade.price
+            'price': Decimal(str(trade.price))
         }
     )
     print(f'Insert response: {response}')

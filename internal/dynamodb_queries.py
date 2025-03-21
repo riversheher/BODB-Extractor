@@ -1,10 +1,13 @@
 import decimal
 from datetime import datetime
-
+from dotenv import load_dotenv
+import os
 import boto3
 from boto3.dynamodb.conditions import Key
 import logging
 from decimal import Decimal  
+
+load_dotenv()
 
 # Configure Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -14,7 +17,7 @@ class MarketDataQueries:
     """Handles querying the market_data table in DynamoDB."""
 
     def __init__(self):
-        self.dynamodb = boto3.resource("dynamodb", region_name="us-east-2")  
+        self.dynamodb = boto3.resource("dynamodb", region_name="us-east-2", aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID"), aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY"))
         self.table = self.dynamodb.Table("market_data")  
 
     def get_records_by_fingerprint(self, fingerprint: str) -> dict:
@@ -33,8 +36,8 @@ class MarketDataQueries:
         """Fetch records by ticker symbol using the GSI."""
         try:
             response = self.table.query(
-                IndexName="ticker_symbol-index",
-                KeyConditionExpression=Key("ticker_symbol").eq(ticker)
+                IndexName="Ticker_Symbol-index",
+                KeyConditionExpression=Key("Ticker_Symbol").eq(ticker)
             )
             logger.info(f"Retrieved {len(response['Items'])} records for ticker {ticker}")
             return response["Items"]
@@ -111,7 +114,7 @@ class TradeRecordQueries:
     """Handles querying the trade_record table in DynamoDB."""
 
     def __init__(self):
-        self.dynamodb = boto3.resource("dynamodb", region_name="us-east-2")  
+        self.dynamodb = boto3.resource("dynamodb", region_name="us-east-2", aws_access_key_id = os.getenv("AWS_ACCESS_KEY_ID"), aws_secret_access_key = os.getenv("AWS_SECRET_ACCESS_KEY"))
         self.table = self.dynamodb.Table("trade_record")
 
     def get_records_by_expiration_date(self, expiration_date: datetime) -> dict:
