@@ -105,7 +105,7 @@ class extractor:
                 line_type = record_type.get_record_type(line[0:2])
                 record = self.construct_record(line)
             except Exception as e:
-                self.log.warning(f'Error extracting record: {str(record)}: \n{repr(e)}\n skipping...')
+                self.log.warning(f'Error extracting record on line number: #{line_number} text: {line}: \n{repr(e)}\n skipping...')
                 continue
 
             if record is not None:
