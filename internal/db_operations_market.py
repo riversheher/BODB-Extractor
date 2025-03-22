@@ -37,7 +37,7 @@ def insert_quote(quote):
             'ask': Decimal(str(quote.ask))
         }
     )
-    print(f'Insert response: {response}')
+    #print(f'Insert response: {response}')
 
 # Query by Ticker_Symbol
 def query_by_ticker(fingerprint):
