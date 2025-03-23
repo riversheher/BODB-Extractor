@@ -1,4 +1,4 @@
-from db_sharc import get_connection
+from internal.db_sharc import get_connection
 
 class db_operations_pg_tertiary:
 
