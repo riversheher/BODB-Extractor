@@ -1,4 +1,5 @@
 from internal.db_sharc import get_connection
+from datetime import datetime
 
 class db_operations_pg_tertiary:
 
@@ -11,6 +12,10 @@ class db_operations_pg_tertiary:
         """
         with get_connection() as conn:
             with conn.cursor() as cur:
-                cur.execute(query, (record_type, timestamp, ticker, raw_line, fingerprint))
+                cur.execute(query, toTuple(record_type, timestamp, ticker, raw_line, fingerprint))
                 conn.commit()
                 return cur.fetchone()[0]
+            
+            
+def toTuple(record_type: str, timestamp: datetime, ticker: str, raw_line: str, fingerprint: str) -> tuple:
+    return (record_type, timestamp.strftime('%Y-%m-%d %H:%M:%S'), ticker, raw_line, fingerprint)
