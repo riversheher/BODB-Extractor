@@ -3,7 +3,7 @@ from datetime import datetime
 from models.record import Record
 from models.record import OptionType
 
-import psycopg2
+#import psycopg2
 
 
 class Quote(Record):
