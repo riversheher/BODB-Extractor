@@ -48,7 +48,7 @@ class Trade(Record):
         Returns:
             tuple: a tuple representation of the Trade object
         """
-        return (self.timestamp.strftime('%Y-%m-%d %H:%M:%S'), self.expiration_date.strftime('%Y-%m-%d %H:%M:%S'), self.ticker, self.strike_price, self.underlying_price, self.option_type.name, self.volume, self.price, self.fingerprint)
+        return (self.timestamp.strftime('%Y-%m-%d %H:%M:%S'), self.expiration_date.strftime('%Y-%m-%d %H:%M:%S'), self.ticker, self.strike_price, self.underlying_price, self.volume, self.price, self.fingerprint)
     
     def insert(self, conn) -> Exception:
         """Inserts the trade object into the database.

@@ -56,7 +56,7 @@ class Quote(Record):
         Returns:
             tuple: a tuple representation of the Quote object
         """
-        return (self.timestamp.strftime('%Y-%m-%d %H:%M:%S'), self.expiration_date.strftime('%Y-%m-%d %H:%M:%S'), self.ticker, self.strike_price, self.underlying_price, self.option_type.name, self.bid, self.ask, self.fingerprint)
+        return (self.timestamp.strftime('%Y-%m-%d %H:%M:%S'), self.expiration_date.strftime('%Y-%m-%d %H:%M:%S'), self.ticker, self.strike_price, self.underlying_price, self.bid, self.ask, self.fingerprint)
         
     def insert(self, conn) -> Exception:
         """Inserts the quote record into the database.
