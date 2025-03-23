@@ -1,12 +1,12 @@
-from venv import logger
+# from venv import logger
 import traceback
 import logging
 import internal.file_reader as reader
 import internal.record_type as record_type
 import internal.ticker_conversion as ticker_conversion
 import internal.trade_detail as trade
-import internal.db_operations_market as quote_operations
-import internal.db_operations_trade as trade_operations
+# import internal.db_operations_market as quote_operations
+# import internal.db_operations_trade as trade_operations
 from internal.asset_price import price_to_dollars_cents, price_to_dollars_eighths
 from internal.date_time import string_to_datetime
 from internal.expiration_month import get_expiration_date
