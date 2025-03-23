@@ -117,11 +117,13 @@ class extractor:
                     # record.insert(self.conn)  # POSTGRES
                     if line_type == "Trade":
                         trades_pg.insert(record)
-                        trade_operations.insert_trade(record)
+                        # trade_operations.insert_trade(record) #DYNAMO
                     elif line_type == "Quote":
-                        quote_operations.insert_quote(record)
+                        quotes_pg.insert(record)
+                        # quote_operations.insert_quote(record) #DYNAMO
                     else:
                          self.log.info(f'File {file_name}, Line {line_number}: Unknown Record type "{line_type}" for record: {record}')
+                         tertiary_pg.insert(line_type, record.timestamp, record.ticker, line, record.fingerprint)
                     successes += 1
                 except Exception as e:
                     errors += 1
