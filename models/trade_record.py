@@ -4,26 +4,25 @@ from models.record import Record
 from models.record import OptionType
 
 class Trade(Record):
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS trades (
-        id BIGSERIAL PRIMARY KEY,
-        timestamp TIMESTAMP NOT NULL,
-        expiration_date TIMESTAMP NOT NULL,
-        ticker VARCHAR(5) NOT NULL,
-        strike_price REAL NOT NULL,
-        underlying_price REAL NOT NULL,
-        option_type optiontype NOT NULL,
-        volume INTEGER NOT NULL,
-        price REAL NOT NULL,
-        fingerprint TEXT UNIQUE
-    )
+    #create_table_query = """
+    #CREATE TABLE IF NOT EXISTS trades (
+    #    id BIGSERIAL PRIMARY KEY,
+    #    timestamp TIMESTAMP NOT NULL,
+    #    expiration_date TIMESTAMP NOT NULL,
+    #    ticker VARCHAR(5) NOT NULL,
+    #    strike_price REAL NOT NULL,
+    #    underlying_price REAL NOT NULL,
+    #    option_type optiontype NOT NULL,
+    #    volume INTEGER NOT NULL,
+    #    price REAL NOT NULL,
+    #    fingerprint TEXT UNIQUE
+    #)
     """
     
     insert_query = """
-    INSERT INTO trades
-    (timestamp, expiration_date, ticker, strike_price, underlying_price, option_type, volume, price, fingerprint)
-    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
-    """        
+    #INSERT INTO trades
+    #(timestamp, expiration_date, ticker, strike_price, underlying_price, option_type, volume, price, fingerprint)
+    #VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
        
     def __init__(self, record: Record, volume: int, price: float, id: int = None, fingerprint: str = None):
         """Initializes a new Trade object from the given Record object and trade details.
