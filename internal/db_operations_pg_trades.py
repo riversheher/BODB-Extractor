@@ -1,10 +1,10 @@
 from db_sharc import get_connection
-from models.trade_record import Trade
+from models.record import Record
 
 class db_operations_pg_trades():
 
     @staticmethod
-    def insert(trade: Trade) -> int:
+    def insert(trade: Record) -> int:
         query = """
         INSERT INTO trades (timestamp, expiration_date, ticker, strike_price,
                             underlying_price, volume, price, fingerprint)

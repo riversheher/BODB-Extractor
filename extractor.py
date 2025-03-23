@@ -13,6 +13,9 @@ from internal.expiration_month import get_expiration_date
 from models.record import Record
 from models.trade_record import Trade
 from models.quote_record import Quote
+from internal.db_operations_pg_quotes import db_operations_pg_quotes as quotes_pg
+from internal.db_operations_pg_trades import db_operations_pg_trades as trades_pg
+from internal.db_operations_pg_tertiary import db_operations_pg_tertiary as tertiary_pg
 from datetime import datetime
 # import psycopg2  # POSTGRES
 import os
@@ -113,6 +116,7 @@ class extractor:
                 try:
                     # record.insert(self.conn)  # POSTGRES
                     if line_type == "Trade":
+                        trades_pg.insert(record)
                         trade_operations.insert_trade(record)
                     elif line_type == "Quote":
                         quote_operations.insert_quote(record)

@@ -1,10 +1,10 @@
 from db_sharc import get_connection
-from models.quote_record import Quote
+from models.record import Record
 
 class db_operations_pg_quotes:
 
     @staticmethod
-    def insert(quote: Quote) -> int:
+    def insert(quote: Record) -> int:
         query = """
         INSERT INTO quotes (timestamp, expiration_date, ticker, strike_price,
                             underlying_price, bid, ask, fingerprint)
