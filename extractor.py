@@ -197,7 +197,7 @@ class extractor:
                 quote_record = Quote(result, bid, ask)
                 return quote_record
             else:
-                raise Exception(f'Extraction for record type: {type} not implemented')
+                return result
         except Exception as e:
             self.log.error(f'Error in construction Quote or Trade: {repr(e)}')
             raise e
