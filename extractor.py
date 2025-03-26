@@ -43,8 +43,11 @@ class extractor:
     def __init__(self):
         #self.db_config = db_config
         #self.conn = None
+        log_dir = "/scratch/nabbasey/logs"
+        os.makedirs(log_dir, exist_ok=True)
         timestamp_log = datetime.now().strftime("%Y%m%d_%H%M%S")
-        logging.basicConfig(filename=f'{timestamp_log}.log', format='%(asctime)s %(message)s', filemode='w',
+        log_path = os.path.join(log_dir, f"{timestamp_log}.log")
+        logging.basicConfig(filename=log_path, format='%(asctime)s %(message)s', filemode='w',
                             level=logging.INFO)
         self.log = logging.getLogger()
 
