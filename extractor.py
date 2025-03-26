@@ -43,7 +43,8 @@ class extractor:
     def __init__(self):
         #self.db_config = db_config
         #self.conn = None
-        logging.basicConfig(filename=f'{datetime.now()}.log', format='%(asctime)s %(message)s', filemode='w',
+        timestamp_log = datetime.now().strftime("%Y%m%d_%H%M%S")
+        logging.basicConfig(filename=f'{timestamp_log}.log', format='%(asctime)s %(message)s', filemode='w',
                             level=logging.INFO)
         self.log = logging.getLogger()
 
