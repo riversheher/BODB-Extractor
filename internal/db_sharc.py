@@ -6,7 +6,7 @@ def get_connection():
     return psycopg2.connect(
         dbname="bodb",
         user="nabbasey",
-        host=os.environ.get("PGHOST", "localhost"),
+        host=os.environ.get("PGHOST", "/tmp"),
         port=os.environ.get("PGPORT", 5432)
     )
 
