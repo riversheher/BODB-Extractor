@@ -26,6 +26,71 @@ from functools import partial
 from models.record import OptionType
 
 
+def process_line(line_tuple):
+    line, line_number, file_name = line_tuple
+    log = logging.getLogger()
+
+    if len(line) != 40:
+        return None
+
+    try:
+        line_type = record_type.get_record_type(line[0:2])
+        record = extractor.construct_record(line)
+        if record is None:
+            return None
+
+        record.fingerprint = f"{file_name}:{line_number}"
+
+        if line_type in ("Trade", "Quote"):
+            return line_type, record
+        else:
+            return ("Tertiary", TertiaryRecord(
+                record_type=line_type,
+                timestamp=record.timestamp,
+                ticker=record.ticker,
+                raw_line=line,
+                fingerprint=record.fingerprint
+            ))
+    except Exception as e:
+        log.warning(f'Error processing line #{line_number}: {repr(e)}')
+        return None
+
+def construct_record(line: str) -> Record:
+    try:
+        type = record_type.get_record_type(line[0:2])
+    except ValueError as e:
+        logging.error(f"Failed to extract record type: {e}")
+        return None
+
+    ticker_symbol = ticker_conversion.get_ticker_details(line[2:5])
+    date_time = string_to_datetime(line[5:17])
+    expiration_date = get_expiration_date(line[17:19], date_time)
+    option_type = OptionType.call if line[20] != '-' else OptionType.put
+    strike_price = price_to_dollars_cents(line[21:25])
+
+    jan_1986 = datetime(1986, 1, 1)
+    if date_time < jan_1986:
+        underlying_price = price_to_dollars_cents(line[35:40])
+    else:
+        underlying_price = price_to_dollars_eighths(line[35:40])
+
+    result = Record(date_time, expiration_date, ticker_symbol, option_type, strike_price, underlying_price)
+
+    try:
+        if type == "Trade":
+            price = price_to_dollars_cents(line[25:30])
+            volume = trade.get_volume(line[30:35])
+            return Trade(result, volume, price)
+        elif type == "Quote":
+            bid = price_to_dollars_cents(line[25:30])
+            ask = price_to_dollars_cents(line[30:35])
+            return Quote(result, bid, ask)
+        else:
+            return result
+    except Exception as e:
+        logging.getLogger().error(f'Error in construction Quote or Trade: {repr(e)}')
+        raise e
+
 class extractor:
     """
     Extractor is a class that handles the extraction of BODB data from a file,
@@ -144,106 +209,9 @@ class extractor:
 
         self.log.info(f'FINISHED extracting {file_name} with {successes} successes and {errors} errors')
 
-    @staticmethod
-    def process_line(line_tuple):
-
-        line, line_number, file_name = line_tuple
-        log = logging.getLogger()
-
-        if len(line) != 40:
-            return None
-
-        try:
-            line_type = record_type.get_record_type(line[0:2])
-            record = extractor.construct_record(line)
-            if record is None:
-                return None
-
-            record.fingerprint = f"{file_name}:{line_number}"
-
-            if line_type in ("Trade", "Quote"):
-                return line_type, record
-            else:
-                return ("Tertiary", TertiaryRecord(
-                    record_type=line_type,
-                    timestamp=record.timestamp,
-                    ticker=record.ticker,
-                    raw_line=line,
-                    fingerprint=record.fingerprint
-                ))
-        except Exception as e:
-            log.warning(f'Error processing line #{line_number}: {repr(e)}')
-            return None
 
 
-    @staticmethod
-    def construct_record(self, line: str) -> Record:
-        """construct_record constructs a record object from a line of BODB data
-        If the line is not a valid BODB record, None is returned
-        If the line is a valid BODB record, a Record object is returned,
-        it could be of type Quote or Trade
 
-        Args:
-            line (str): The line extracted from the BODB file
-
-        Returns:
-            Record: A Record object representing the BODB data,
-            or None if the line is not a valid BODB record.  This is of child type Quote or Trade
-        """
-
-        # Extract the record type
-        type = None
-        try:
-            type = record_type.get_record_type(line[0:2])
-        except ValueError as e:
-            logging.error(f"Failed to extract record type: {e}")
-            return None
-
-        # Extract the ticker details
-        ticker_symbol = ticker_conversion.get_ticker_details(line[2:5])
-
-        # Extract the date and time
-        date_time = string_to_datetime(line[5:17])
-
-        # Extract the expiration date
-        expiration_date = get_expiration_date(line[17:19], date_time)
-
-        # Extract the call/put flag
-        option_type = OptionType.call
-        if line[20] == '-':
-            option_type = OptionType.put
-
-        # Extract the strike price
-        strike_price = price_to_dollars_cents(line[21:25])
-
-        # Extract the underlying price
-        jan_1986 = datetime(1986, 1, 1)
-        if date_time < jan_1986:
-            underlying_price = price_to_dollars_cents(line[35:40])
-        else:
-            underlying_price = price_to_dollars_eighths(line[35:40])
-
-        # Create a record object
-        result = Record(date_time, expiration_date, ticker_symbol, option_type, strike_price, underlying_price)
-
-        if type is None:
-            raise Exception("No type was extracted")
-        try:
-            if type == "Trade":
-                price = price_to_dollars_cents(line[25:30])
-                volume = trade.get_volume(line[30:35])
-                trade_record = Trade(result, volume, price)
-                return trade_record
-            elif type == "Quote":
-                bid = price_to_dollars_cents(line[25:30])
-                ask = price_to_dollars_cents(line[30:35])
-                quote_record = Quote(result, bid, ask)
-                return quote_record
-            else:
-                return result
-        except Exception as e:
-            self.log.error(f'Error in construction Quote or Trade: {repr(e)}')
-            raise e
 
 
 """
