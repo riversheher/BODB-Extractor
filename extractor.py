@@ -176,6 +176,10 @@ class extractor:
 
         pool_input = [(line, i + 1, file_name) for i, line in enumerate(file_reader)]
 
+        sample_line = pool_input[0]
+        self.log.info(f"Sample input line: {sample_line}")
+        self.log.info(f"Result from process_line: {process_line(sample_line)}")
+
         with Pool(processes=4) as pool:
             results = pool.map(process_line, pool_input)
 
