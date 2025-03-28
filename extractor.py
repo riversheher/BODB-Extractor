@@ -13,12 +13,15 @@ from internal.expiration_month import get_expiration_date
 from models.record import Record
 from models.trade_record import Trade
 from models.quote_record import Quote
+from models.tertiary_record import tertiary_record as TertiaryRecord
 from internal.db_operations_pg_quotes import db_operations_pg_quotes as quotes_pg
 from internal.db_operations_pg_trades import db_operations_pg_trades as trades_pg
 from internal.db_operations_pg_tertiary import db_operations_pg_tertiary as tertiary_pg
 from datetime import datetime
 # import psycopg2  # POSTGRES
 import os
+from multiprocessing import Pool
+from functools import partial
 
 from models.record import OptionType
 
@@ -100,44 +103,80 @@ class extractor:
         successes = 0
         file_name = os.path.basename(filepath)
         item_type = 0
+        trade_records = []
+        quote_records = []
+        tertiary_records = []
 
         self.log.info(f'STARTING EXTRACTION FOR {file_name}')
 
-        for line in file_reader:
-            line_number += 1
-            # check if line has 40 characters
-            if len(line) != 40:
-                pass
+        pool_input = [(line, i + 1, file_name) for i, line in enumerate(file_reader)]
+
+        with Pool(processes=4) as pool:
+            results = pool.map(extractor.process_line, pool_input)
+
+        for result in results:
+            if result is None:
+                errors += 1
+                continue
             try:
-                line_type = record_type.get_record_type(line[0:2])
-                record = self.construct_record(line)
+                line_type, record = result
+                if line_type == "Trade":
+                    trade_records.append(record)
+                elif line_type == "Quote":
+                    quote_records.append(record)
+                elif line_type == "Tertiary":
+                    tertiary_records.append(record)
+                successes += 1
             except Exception as e:
-                self.log.warning(f'Error extracting record on line number: #{line_number} text: {line}: \n{repr(e)}\n skipping...')
+                errors += 1
+                self.log.warning(f'Error extracting record: {str(result)}: \n{repr(e)}\nSkipping...')
                 continue
 
-            if record is not None:
-                record.fingerprint = f"{file_name}:{line_number}"
-                try:
-                    # record.insert(self.conn)  # POSTGRES
-                    if line_type == "Trade":
-                        trades_pg.insert(record)
-                        # trade_operations.insert_trade(record) #DYNAMO
-                    elif line_type == "Quote":
-                        quotes_pg.insert(record)
-                        # quote_operations.insert_quote(record) #DYNAMO
-                    else:
-                         self.log.info(f'File {file_name}, Line {line_number}: Unknown Record type "{line_type}" for record: {record}')
-                         tertiary_pg.insert(line_type, record.timestamp, record.ticker, line, record.fingerprint)
-                    successes += 1
-                except Exception as e:
-                    errors += 1
-                    self.log.warning(f'Error extracting record: {str(record)}: \n{repr(e)}\n')
-                    traceback.print_exception(type(e), e, e.__traceback__)
-                    self.log.warning(f'skipping...')
-                    continue
+        try:
+            if trade_records:
+                trades_pg.insert_many(trade_records)
+            if quote_records:
+                quotes_pg.insert_many(quote_records)
+            if tertiary_records:
+                tertiary_pg.insert_many(tertiary_records)
+        except Exception as e:
+            self.log.critical(f'Critical failure during batch inserts: {repr(e)}')
 
-        self.log.info(f'Finished extracting {file_name}, with successes: {successes}, and errors: {errors}')
+        self.log.info(f'FINISHED extracting {file_name} with {successes} successes and {errors} errors')
 
+    @staticmethod
+    def process_line(line_tuple):
+
+        line, line_number, file_name = line_tuple
+        log = logging.getLogger()
+
+        if len(line) != 40:
+            return None
+
+        try:
+            line_type = record_type.get_record_type(line[0:2])
+            record = extractor.construct_record(line)
+            if record is None:
+                return None
+
+            record.fingerprint = f"{file_name}:{line_number}"
+
+            if line_type in ("Trade", "Quote"):
+                return line_type, record
+            else:
+                return ("Tertiary", TertiaryRecord(
+                    record_type=line_type,
+                    timestamp=record.timestamp,
+                    ticker=record.ticker,
+                    raw_line=line,
+                    fingerprint=record.fingerprint
+                ))
+        except Exception as e:
+            log.warning(f'Error processing line #{line_number}: {repr(e)}')
+            return None
+
+
+    @staticmethod
     def construct_record(self, line: str) -> Record:
         """construct_record constructs a record object from a line of BODB data
         If the line is not a valid BODB record, None is returned
@@ -205,3 +244,55 @@ class extractor:
         except Exception as e:
             self.log.error(f'Error in construction Quote or Trade: {repr(e)}')
             raise e
+
+
+"""
+    def extract(self, filepath):
+        # Call the file reader to read the file line by line
+        file_reader = reader.read_file(filepath)
+        # Keep track of line number and file name
+        line_number = 0
+        errors = 0
+        successes = 0
+        file_name = os.path.basename(filepath)
+        item_type = 0
+
+        self.log.info(f'STARTING EXTRACTION FOR {file_name}')
+
+        for line in file_reader:
+            line_number += 1
+            # check if line has 40 characters
+            if len(line) != 40:
+                pass
+            try:
+                line_type = record_type.get_record_type(line[0:2])
+                record = self.construct_record(line)
+            except Exception as e:
+                self.log.warning(f'Error extracting record on line number: #{line_number} text: {line}: \n{repr(e)}\n skipping...')
+                continue
+
+            if record is not None:
+                record.fingerprint = f"{file_name}:{line_number}"
+                try:
+                    # record.insert(self.conn)  # POSTGRES
+                    if line_type == "Trade":
+                        trades_pg.insert(record)
+                        # trade_operations.insert_trade(record) #DYNAMO
+                    elif line_type == "Quote":
+                        quotes_pg.insert(record)
+                        # quote_operations.insert_quote(record) #DYNAMO
+                    else:
+                         self.log.info(f'File {file_name}, Line {line_number}: Unknown Record type "{line_type}" for record: {record}')
+                         tertiary_pg.insert(line_type, record.timestamp, record.ticker, line, record.fingerprint)
+                    successes += 1
+                except Exception as e:
+                    errors += 1
+                    self.log.warning(f'Error extracting record: {str(record)}: \n{repr(e)}\n')
+                    traceback.print_exception(type(e), e, e.__traceback__)
+                    self.log.warning(f'skipping...')
+                    continue
+
+        self.log.info(f'Finished extracting {file_name}, with successes: {successes}, and errors: {errors}')
+"""
+
+
