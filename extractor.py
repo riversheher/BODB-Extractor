@@ -25,36 +25,6 @@ from functools import partial
 
 from models.record import OptionType
 
-
-def process_line(line_tuple):
-    line, line_number, file_name = line_tuple
-    log = logging.getLogger()
-
-    if len(line) != 40:
-        return None
-
-    try:
-        line_type = record_type.get_record_type(line[0:2])
-        record = extractor.construct_record(line)
-        if record is None:
-            return None
-
-        record.fingerprint = f"{file_name}:{line_number}"
-
-        if line_type in ("Trade", "Quote"):
-            return line_type, record
-        else:
-            return ("Tertiary", TertiaryRecord(
-                record_type=line_type,
-                timestamp=record.timestamp,
-                ticker=record.ticker,
-                raw_line=line,
-                fingerprint=record.fingerprint
-            ))
-    except Exception as e:
-        log.warning(f'Error processing line #{line_number}: {repr(e)}')
-        return None
-
 def construct_record(line: str) -> Record:
     try:
         type = record_type.get_record_type(line[0:2])
@@ -90,6 +60,36 @@ def construct_record(line: str) -> Record:
     except Exception as e:
         logging.getLogger().error(f'Error in construction Quote or Trade: {repr(e)}')
         raise e
+
+def process_line(line_tuple):
+    line, line_number, file_name = line_tuple
+    log = logging.getLogger()
+
+    if len(line) != 40:
+        return None
+
+    try:
+        line_type = record_type.get_record_type(line[0:2])
+        record = construct_record(line)
+        if record is None:
+            return None
+
+        record.fingerprint = f"{file_name}:{line_number}"
+
+        if line_type in ("Trade", "Quote"):
+            return line_type, record
+        else:
+            return ("Tertiary", TertiaryRecord(
+                record_type=line_type,
+                timestamp=record.timestamp,
+                ticker=record.ticker,
+                raw_line=line,
+                fingerprint=record.fingerprint
+            ))
+    except Exception as e:
+        log.warning(f'Error processing line #{line_number}: {repr(e)}')
+        return None
+
 
 class extractor:
     """
@@ -177,7 +177,7 @@ class extractor:
         pool_input = [(line, i + 1, file_name) for i, line in enumerate(file_reader)]
 
         with Pool(processes=4) as pool:
-            results = pool.map(extractor.process_line, pool_input)
+            results = pool.map(process_line, pool_input)
 
         for result in results:
             if result is None:
