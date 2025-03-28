@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "../components/DataTable";
 
-const API_URL = "https://xyz123.execute-api.us-east-2.amazonaws.com/prod/market-data"; // add API URL HERE
+const API_URL = "http://localhost:3001/market-data?table=quotes"; 
 
 const MarketData = () => {
     const [data, setData] = useState([]);
@@ -14,10 +14,10 @@ const MarketData = () => {
     }, []);
 
     const columns = [
-        { field: "ticker_symbol", headerName: "Ticker Symbol" },
-        { field: "strike_price", headerName: "Strike Price" },
+        { field: "ticker", headerName: "Ticker Symbol" },
         { field: "timestamp", headerName: "Timestamp" },
         { field: "expiration_date", headerName: "Expiration Date" },
+        { field: "strike_price", headerName: "Strike Price" },
         { field: "underlying_price", headerName: "Underlying Price" },
         { field: "bid", headerName: "Bid" },
         { field: "ask", headerName: "Ask" },

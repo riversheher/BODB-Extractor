@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "../components/DataTable";
 
-const API_URL = process.env.API_URL + "/trade-records";
+const API_URL = "http://localhost:3001/market-data?table=trades";
 
 const TradeRecords = () => {
     const [data, setData] = useState([]);
@@ -14,10 +14,10 @@ const TradeRecords = () => {
     }, []);
 
     const columns = [
-        { field: "ticker_symbol", headerName: "Ticker Symbol" },
-        { field: "option_type", headerName: "Option Type" },
-        { field: "strike_price", headerName: "Strike Price" },
+        { field: "ticker", headerName: "Ticker Symbol" },
+        { field: "timestamp", headerName: "Timestamp" },
         { field: "expiration_date", headerName: "Expiration Date" },
+        { field: "strike_price", headerName: "Strike Price" },
         { field: "volume", headerName: "Volume" },
         { field: "price", headerName: "Price" },
     ];
