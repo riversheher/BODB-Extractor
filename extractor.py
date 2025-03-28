@@ -174,7 +174,7 @@ class extractor:
 
         self.log.info(f'STARTING EXTRACTION FOR {file_name}')
 
-        pool_input = [(line, i + 1, file_name) for i, line in enumerate(file_reader)]
+        pool_input = [(line.rstrip('\n\r'), i + 1, file_name) for i, line in enumerate(file_reader)]
 
         sample_line = pool_input[0]
         self.log.info(f"Sample input line: {sample_line}")
