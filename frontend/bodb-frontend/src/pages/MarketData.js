@@ -1,38 +1,69 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "../components/DataTable";
-import { TextField, Button, Stack } from "@mui/material";
 
-const API_URL = process.env.API_URL + "/market-data";
+const API_URL = "http://localhost:3001/market-data";
 
 const MarketData = () => {
   const [data, setData] = useState([]);
   const [ticker, setTicker] = useState("");
-  const [expirationDate, setExpirationDate] = useState("");
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [minUnderlying, setMinUnderlying] = useState("");
+  const [maxUnderlying, setMaxUnderlying] = useState("");
+  const [minStrike, setMinStrike] = useState("");
+  const [maxStrike, setMaxStrike] = useState("");
+  const [minBid, setMinBid] = useState("");
+  const [maxBid, setMaxBid] = useState("");
+  const [minAsk, setMinAsk] = useState("");
+  const [maxAsk, setMaxAsk] = useState("");
+  const [minExpiration, setMinExpiration] = useState("");
+  const [maxExpiration, setMaxExpiration] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const fetchData = () => {
-    let url = `${API_URL}?limit=${rowsPerPage}&sort=desc`;
-    if (ticker) url += `&ticker=${ticker}`;
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.append("table", "quotes");
+      if (ticker) params.append("ticker", ticker);
+      if (startDate) params.append("start_date", startDate);
+      if (endDate) params.append("end_date", endDate);
+      if (minUnderlying) params.append("min_underlying", minUnderlying);
+      if (maxUnderlying) params.append("max_underlying", maxUnderlying);
+      if (minStrike) params.append("min_strike", minStrike);
+      if (maxStrike) params.append("max_strike", maxStrike);
+      if (minBid) params.append("min_bid", minBid);
+      if (maxBid) params.append("max_bid", maxBid);
+      if (minAsk) params.append("min_ask", minAsk);
+      if (maxAsk) params.append("max_ask", maxAsk);
+      if (startDate) params.append("start_date", startDate);
+      if (endDate) params.append("end_date", endDate);
+      if (minExpiration) params.append("min_expiration", minExpiration);
+      if (maxExpiration) params.append("max_expiration", maxExpiration);
 
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => setData(data))
-      .catch((err) => console.error("Fetch error:", err));
+      const response = await fetch(`${API_URL}?${params.toString()}`);
+      const json = await response.json();
+      setData(json);
+    } catch (error) {
+      console.error("Error fetching market data:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchData();
-  }, [rowsPerPage]); 
+  }, []);
 
-  const handleFilter = () => {
+  const handleSearch = () => {
     fetchData();
   };
 
   const columns = [
-    { field: "ticker_symbol", headerName: "Ticker Symbol" },
-    { field: "strike_price", headerName: "Strike Price" },
+    { field: "ticker", headerName: "Ticker Symbol" },
     { field: "timestamp", headerName: "Timestamp" },
     { field: "expiration_date", headerName: "Expiration Date" },
+    { field: "strike_price", headerName: "Strike Price" },
     { field: "underlying_price", headerName: "Underlying Price" },
     { field: "bid", headerName: "Bid" },
     { field: "ask", headerName: "Ask" },
@@ -41,29 +72,147 @@ const MarketData = () => {
   return (
     <div>
       <h1>Market Data Table</h1>
-      <Stack direction="row" spacing={2} mb={2}>
-        <TextField
-          label="Ticker Symbol"
-          value={ticker}
-          onChange={(e) => setTicker(e.target.value)}
-        />
-        <TextField
-          label="Expiration Date"
-          type="date"
-          value={expirationDate}
-          InputLabelProps={{ shrink: true }}
-          onChange={(e) => setExpirationDate(e.target.value)}
-        />
-        <Button variant="contained" onClick={handleFilter}>
-          Apply Filters
-        </Button>
-      </Stack>
-      <DataTable
-        columns={columns}
-        data={data}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={(newVal) => setRowsPerPage(newVal)}
-      />
+
+      <div style={{ marginBottom: "1rem" }}>
+        <label>
+          Ticker:{" "}
+          <input
+            type="text"
+            value={ticker}
+            onChange={(e) => setTicker(e.target.value)}
+            placeholder="e.g. AAPL"
+          />
+        </label>
+
+        <label>
+          Min Underlying Price:
+          <input
+            type="number"
+            value={minUnderlying}
+            onChange={(e) => setMinUnderlying(e.target.value)}
+            step="0.01"
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Max Underlying Price:
+          <input
+            type="number"
+            value={maxUnderlying}
+            onChange={(e) => setMaxUnderlying(e.target.value)}
+            step="0.01"
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Min Strike Price:
+          <input
+            type="number"
+            value={minStrike}
+            onChange={(e) => setMinStrike(e.target.value)}
+            step="0.01"
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Max Strike Price:
+          <input
+            type="number"
+            value={maxStrike}
+            onChange={(e) => setMaxStrike(e.target.value)}
+            step="0.01"
+          />
+        </label>
+      </div>
+
+      <div style={{ marginTop: "1rem" }}>
+        <label>
+          Min Bid:
+          <input
+            type="number"
+            value={minBid}
+            onChange={(e) => setMinBid(e.target.value)}
+            step="0.01"
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Max Bid:
+          <input
+            type="number"
+            value={maxBid}
+            onChange={(e) => setMaxBid(e.target.value)}
+            step="0.01"
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Min Ask:
+          <input
+            type="number"
+            value={minAsk}
+            onChange={(e) => setMinAsk(e.target.value)}
+            step="0.01"
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Max Ask:
+          <input
+            type="number"
+            value={maxAsk}
+            onChange={(e) => setMaxAsk(e.target.value)}
+            step="0.01"
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          Start Date:{" "}
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </label>
+
+        <label style={{ marginLeft: "1rem" }}>
+          End Date:{" "}
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </label>
+        <div style={{ marginTop: "1rem" }}>
+          <label>
+            Min Expiration Date:{" "}
+            <input
+              type="date"
+              value={minExpiration}
+              onChange={(e) => setMinExpiration(e.target.value)}
+            />
+          </label>
+
+          <label style={{ marginLeft: "1rem" }}>
+            Max Expiration Date:{" "}
+            <input
+              type="date"
+              value={maxExpiration}
+              onChange={(e) => setMaxExpiration(e.target.value)}
+            />
+          </label>
+        </div>
+
+        <button
+          onClick={handleSearch}
+          disabled={isLoading}
+          style={{ marginLeft: "1rem" }}
+        >
+          {isLoading ? "Loading..." : "Search"}
+        </button>
+      </div>
+
+      <DataTable columns={columns} data={data} />
     </div>
   );
 };
