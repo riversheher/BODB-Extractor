@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "../components/DataTable";
 import recordTypeMap from "../components/record_type";
+import "./organizeFilters.css";
+import Button from "@mui/material/Button";
 
 const API_URL = "http://localhost:3001/market-data";
 
@@ -52,56 +54,62 @@ const Tertiary = () => {
       <h1>Tertiary Records Table</h1>
 
       <div style={{ marginBottom: "1rem" }}>
-        <label>
-          Filter by Ticker:{" "}
-          <input
-            type="text"
-            value={ticker}
-            onChange={(e) => setTicker(e.target.value)}
-            placeholder="e.g. AAPL"
-          />
-        </label>
+        <div className="filters-container">
+          <label className="filter-label">
+            Filter by Ticker:
+            <input
+              type="text"
+              value={ticker}
+              onChange={(e) => setTicker(e.target.value)}
+              placeholder="e.g. AAPL"
+              className="filter-input"
+            />
+          </label>
 
-        <label style={{ marginLeft: "1rem" }}>
-          Filter by Record Type:{" "}
-          <select
-            value={recordType}
-            onChange={(e) => setRecordType(e.target.value)}
+          <label className="filter-label">
+            Filter by Record Type:
+            <select
+              value={recordType}
+              onChange={(e) => setRecordType(e.target.value)}
+              className="filter-select"
+            >
+              <option value="">All</option>
+              {Object.entries(recordTypeMap).map(([code, label]) => (
+                <option key={code} value={code}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="filter-label">
+            Start Date:
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="filter-input"
+            />
+          </label>
+
+          <label className="filter-label">
+            End Date:
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="filter-input"
+            />
+          </label>
+          <Button
+            onClick={handleSearch}
+            disabled={isLoading}
+            style={{ marginLeft: "1rem" }}
+            variant="contained"
           >
-            <option value="">All</option>
-            {Object.entries(recordTypeMap).map(([code, label]) => (
-              <option key={code} value={code}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label style={{ marginLeft: "1rem" }}>
-          Start Date:{" "}
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </label>
-
-        <label style={{ marginLeft: "1rem" }}>
-          End Date:{" "}
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </label>
-
-        <button
-          onClick={handleSearch}
-          disabled={isLoading}
-          style={{ marginLeft: "1rem" }}
-        >
-          {isLoading ? "Loading..." : "Search"}
-        </button>
+            {isLoading ? "Loading..." : "Search"}
+          </Button>
+        </div>
       </div>
 
       <DataTable columns={columns} data={Array.isArray(data) ? data : []} />

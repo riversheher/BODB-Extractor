@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DataTable from "../components/DataTable";
+import "./organizeFilters.css";
+import Button from "@mui/material/Button";
 
 const API_URL = "http://localhost:3001/market-data";
 
@@ -72,143 +74,152 @@ const TradeRecords = () => {
       <h1>Trade Records Table</h1>
 
       <div style={{ marginBottom: "1rem" }}>
-        <label>
-          Ticker:{" "}
-          <input
-            type="text"
-            value={ticker}
-            onChange={(e) => setTicker(e.target.value)}
-            placeholder="e.g. AAPL"
-          />
-        </label>
+        <div className="filters-container">
+          <label className="filter-label">
+            Ticker:
+            <input
+              type="text"
+              value={ticker}
+              onChange={(e) => setTicker(e.target.value)}
+              placeholder="e.g. AAPL"
+              className="filter-input"
+            />
+          </label>
 
-        <div style={{ marginTop: "1rem" }}>
-          <label>
+          <label className="filter-label">
             Min Strike Price:
             <input
               type="number"
               step="0.01"
               value={minStrike}
               onChange={(e) => setMinStrike(e.target.value)}
+              className="filter-input"
             />
           </label>
 
-          <label style={{ marginLeft: "1rem" }}>
+          <label className="filter-label">
             Max Strike Price:
             <input
               type="number"
               step="0.01"
               value={maxStrike}
               onChange={(e) => setMaxStrike(e.target.value)}
+              className="filter-input"
             />
           </label>
 
-          <label style={{ marginLeft: "1rem" }}>
+          <label className="filter-label">
             Min Underlying Price:
             <input
               type="number"
               step="0.01"
               value={minUnderlying}
               onChange={(e) => setMinUnderlying(e.target.value)}
+              className="filter-input"
             />
           </label>
 
-          <label style={{ marginLeft: "1rem" }}>
+          <label className="filter-label">
             Max Underlying Price:
             <input
               type="number"
               step="0.01"
               value={maxUnderlying}
               onChange={(e) => setMaxUnderlying(e.target.value)}
+              className="filter-input"
             />
           </label>
-        </div>
 
-        <div style={{ marginTop: "1rem" }}>
-          <label>
+          <label className="filter-label">
             Min Volume:
             <input
               type="number"
               value={minVolume}
               onChange={(e) => setMinVolume(e.target.value)}
+              className="filter-input"
             />
           </label>
 
-          <label style={{ marginLeft: "1rem" }}>
+          <label className="filter-label">
             Max Volume:
             <input
               type="number"
               value={maxVolume}
               onChange={(e) => setMaxVolume(e.target.value)}
+              className="filter-input"
             />
           </label>
 
-          <label style={{ marginLeft: "1rem" }}>
+          <label className="filter-label">
             Min Price:
             <input
               type="number"
               step="0.01"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
+              className="filter-input"
             />
           </label>
 
-          <label style={{ marginLeft: "1rem" }}>
+          <label className="filter-label">
             Max Price:
             <input
               type="number"
               step="0.01"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
+              className="filter-input"
             />
           </label>
-        </div>
 
-        <label style={{ marginLeft: "1rem" }}>
-          Start Date:{" "}
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
-        </label>
+          <label className="filter-label">
+            Start Date:
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="filter-input"
+            />
+          </label>
 
-        <label style={{ marginLeft: "1rem" }}>
-          End Date:{" "}
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-          />
-        </label>
+          <label className="filter-label">
+            End Date:
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="filter-input"
+            />
+          </label>
 
-        <div style={{ marginTop: "1rem" }}>
-          <label>
-            Min Expiration Date:{" "}
+          <label className="filter-label">
+            Min Expiration Date:
             <input
               type="date"
               value={minExpiration}
               onChange={(e) => setMinExpiration(e.target.value)}
+              className="filter-input"
             />
           </label>
 
-          <label style={{ marginLeft: "1rem" }}>
-            Max Expiration Date:{" "}
+          <label className="filter-label">
+            Max Expiration Date:
             <input
               type="date"
               value={maxExpiration}
               onChange={(e) => setMaxExpiration(e.target.value)}
+              className="filter-input"
             />
           </label>
+          <Button
+            onClick={handleSearch}
+            disabled={isLoading}
+            style={{ marginLeft: "1rem" }}
+            variant="contained"
+          >
+            {isLoading ? "Loading..." : "Search"}
+          </Button>
         </div>
-
-        <button
-          onClick={handleSearch}
-          disabled={isLoading}
-          style={{ marginLeft: "1rem" }}
-        >
-          {isLoading ? "Loading..." : "Search"}
-        </button>
       </div>
 
       <DataTable columns={columns} data={data} />
