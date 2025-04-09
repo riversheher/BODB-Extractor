@@ -66,12 +66,12 @@ app.get("/market-data", async (req, res) => {
 
   if (start_date) {
     sql += ` AND timestamp >= $${idx++}`;
-    values.push(start_date);
+    values.push(new Date(`${start_date}T00:00:00Z`).toISOString());
   }
 
   if (end_date) {
     sql += ` AND timestamp <= $${idx++}`;
-    values.push(end_date);
+    values.push(new Date(`${end_date}T23:59:59.999Z`).toISOString());
   }
 
   if (min_underlying) {
@@ -124,16 +124,18 @@ app.get("/market-data", async (req, res) => {
   }
   if (min_expiration) {
     sql += ` AND expiration_date >= $${idx++}`;
-    values.push(min_expiration);
+    values.push(new Date(`${min_expiration}T00:00:00.000Z`).toISOString());
   }
   if (max_expiration) {
     sql += ` AND expiration_date <= $${idx++}`;
-    values.push(max_expiration);
+    values.push(new Date(`${max_expiration}T23:59:59.999Z`).toISOString());
   }
 
   sql += ` ORDER BY timestamp DESC LIMIT 100`;
 
   try {
+    console.log("Final SQL:", sql);
+    console.log("Date range values:", values);
     const result = await pool.query(sql, values);
     res.json(result.rows);
   } catch (err) {
