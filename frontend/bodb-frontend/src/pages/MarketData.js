@@ -38,8 +38,6 @@ const MarketData = () => {
       if (maxBid) params.append("max_bid", maxBid);
       if (minAsk) params.append("min_ask", minAsk);
       if (maxAsk) params.append("max_ask", maxAsk);
-      if (startDate) params.append("start_date", startDate);
-      if (endDate) params.append("end_date", endDate);
       if (minExpiration) params.append("min_expiration", minExpiration);
       if (maxExpiration) params.append("max_expiration", maxExpiration);
 
@@ -69,6 +67,7 @@ const MarketData = () => {
     { field: "underlying_price", headerName: "Underlying Price" },
     { field: "bid", headerName: "Bid" },
     { field: "ask", headerName: "Ask" },
+    { field: "fingerprint", headerName: "Fingerprint" },
   ];
 
   return (

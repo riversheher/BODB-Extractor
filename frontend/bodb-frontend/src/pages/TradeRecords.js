@@ -67,6 +67,7 @@ const TradeRecords = () => {
     { field: "underlying_price", headerName: "Underlying Price" },
     { field: "volume", headerName: "Volume" },
     { field: "price", headerName: "Price" },
+    { field: "fingerprint", headerName: "Fingerprint" },
   ];
 
   return (
